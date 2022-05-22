@@ -1,0 +1,120 @@
+syntax = "proto3";
+
+package tb;
+
+option go_package = "./pb";
+
+//message Quote {
+//    string symbol = 1;
+//    string market_state = 2;
+//    string quote_type = 3;
+//    string short_name = 4;
+//    float market_price = 5;
+//    float market_time = 6;
+//    float market_change = 7;
+//    float market_open = 8;
+//    float market_day_high = 9;
+//    float market_day_low = 10;
+//    float market_volume = 11;
+//    string currency_id = 12;
+//    bool is_tradable = 13;
+//    int64 quote_delay = 14;
+//    string full_exchange_name = 15;
+//    int64 source_interval = 16;
+//    string exchange_timezone_name = 17;
+//    string exchange_timezone_short_name = 18;
+//    string market_id = 19;
+//    string exchange_id = 20;
+//}
+
+message Stock {
+    YahooQuote quote = 1;
+}
+
+message YahooQuote {
+    string language = 1;
+    string region = 2;
+    string quoteType = 3;
+    string typeDisp = 4;
+    string quoteSourceName = 5;
+    bool triggerable = 6;
+    string customPriceAlertConfidence = 7;
+    string currency = 8;
+    string marketState = 9;
+    uint64 firstTradeDateMilliseconds = 10;
+    uint32 priceHint = 11;
+    double postMarketChangePercent = 12;
+    uint32 postMarketTime = 13;
+    double postMarketPrice = 14;
+    double postMarketChange = 15;
+    double regularMarketChange = 16;
+    double regularMarketChangePercent = 17;
+    uint32 regularMarketTime = 18;
+    double regularMarketPrice = 19;
+    double regularMarketDayHigh = 20;
+    string regularMarketDayRange = 21;
+    double regularMarketDayLow = 22;
+    uint32 regularMarketVolume = 23;
+    double regularMarketPreviousClose = 24;
+    double bid = 25;
+    double ask = 26;
+    uint32 bidSize = 27;
+    uint32 askSize = 28;
+    string fullExchangeName = 29;
+    string financialCurrency = 30;
+    double regularMarketOpen = 31;
+    uint32 averageDailyVolume3Month = 32;
+    uint32 averageDailyVolume10Day = 33;
+    double fiftyTwoWeekLowChange = 34;
+    double fiftyTwoWeekLowChangePercent = 35;
+    string fiftyTwoWeekRange = 36;
+    double fiftyTwoWeekHighChange = 37;
+    double fiftyTwoWeekHighChangePercent = 38;
+    double fiftyTwoWeekLow = 39;
+    double fiftyTwoWeekHigh = 40;
+    uint32 dividendDate = 41;
+    uint32 earningsTimestamp = 42;
+    uint32 earningsTimestampStart = 43;
+    uint32 earningsTimestampEnd = 44;
+    double trailingAnnualDividendRate = 45;
+    double trailingPE = 46;
+    double trailingAnnualDividendYield = 47;
+    double epsTrailingTwelveMonths = 48;
+    double epsForward = 49;
+    double epsCurrentYear = 50;
+    double priceEpsCurrentYear = 51;
+    uint64 sharesOutstanding = 52;
+    double bookValue = 53;
+    double fiftyDayAverage = 54;
+    double fiftyDayAverageChange = 55;
+    double fiftyDayAverageChangePercent = 56;
+    double twoHundredDayAverage = 57;
+    double twoHundredDayAverageChange = 58;
+    double twoHundredDayAverageChangePercent = 59;
+    uint64 marketCap = 60;
+    double forwardPE = 61;
+    double priceToBook = 62;
+    uint32 sourceInterval = 63;
+    uint32 exchangeDataDelayedBy = 64;
+    double pageViewGrowthWeekly = 65;
+    string averageAnalystRating = 66;
+    bool tradeable = 67;
+    string exchange = 68;
+    string shortName = 69;
+    string longName = 70;
+    string messageBoardId = 71;
+    string exchangeTimezoneName = 72;
+    string exchangeTimezoneShortName = 73;
+    int32 gmtOffSetMilliseconds = 74;
+    string market = 75;
+    bool esgPopulated = 76;
+    string displayName = 77;
+    string symbol = 78;
+}
+
+message YahooQuoteResponse {
+    message QuoteResponse {
+        repeated YahooQuote result = 1;
+    }
+    QuoteResponse quoteResponse = 1;
+}

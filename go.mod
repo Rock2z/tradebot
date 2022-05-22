@@ -1,4 +1,4 @@
-module github.com/Rock2z/tradebot
+module github.com/rock2z/tradebot
 
 go 1.17
 
