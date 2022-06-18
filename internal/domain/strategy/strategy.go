@@ -4,12 +4,12 @@ import (
 	"github.com/rock2z/tradebot/internal/domain/timeslot"
 )
 
-type Operation uint32
+type Operation string
 
 const (
-	Buy Operation = iota
-	Sell
-	Hold
+	Buy  Operation = "BUY"
+	Sell Operation = "SELL"
+	Hold Operation = "HOLD"
 )
 
 /*

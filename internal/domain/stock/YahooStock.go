@@ -31,11 +31,14 @@ func (y *YahooStock) Init() error {
 		Symbol:   y.symbol,
 		Start:    datetime.New(&y.from),
 		End:      datetime.New(&y.to),
-		Interval: datetime.OneDay,
+		Interval: datetime.OneMin,
 	}
 	iter := chart.Get(params)
 	for iter.Next() {
 		bar := iter.Current().(*finance.ChartBar)
+		//if !util.InRegularMarketingTime(time.Unix(int64(bar.Timestamp), 0)) {
+		//	continue
+		//}
 		unit := NewBasedStockUnit(
 			timeslot.NewBasedSlot(time.Unix(int64(bar.Timestamp), 0)),
 			bar.High.InexactFloat64(),

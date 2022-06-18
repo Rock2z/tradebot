@@ -10,5 +10,12 @@ import (
 type RandomStrategy struct{}
 
 func (b RandomStrategy) Decide(time timeslot.ISlot) strategy.Operation {
-	return strategy.Operation(rand.Int63n(3))
+	switch rand.Int63n(3) {
+	case 0:
+		return strategy.Buy
+	case 1:
+		return strategy.Sell
+	default:
+		return strategy.Hold
+	}
 }
