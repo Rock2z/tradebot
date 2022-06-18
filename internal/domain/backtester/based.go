@@ -1,13 +1,13 @@
 package backtester
 
 import (
-	"log"
 	"math"
 
 	"github.com/rock2z/tradebot/internal/domain/stock"
 	"github.com/rock2z/tradebot/internal/domain/strategy"
 	"github.com/rock2z/tradebot/internal/domain/timeslot"
-	"github.com/rock2z/tradebot/internal/util"
+	"github.com/rock2z/tradebot/internal/util/chart"
+	"go.uber.org/zap"
 )
 
 type BackTester struct {
@@ -32,18 +32,18 @@ func (b *BackTester) BackTest() error {
 
 		price, err := b.Stock.GetClose(now)
 		if err != nil {
-			log.Printf("b.Stock.GetOpen fail, current slot = %v", series.GetCurrent())
+			zap.S().Infof("b.Stock.GetOpen fail, current slot = %v", series.GetCurrent())
 			return err
 		}
 
-		op := b.Strategy.Decide(now, b.Stock)
+		op := b.Strategy.Decide(now)
 		o := "HOLD"
 		switch op {
 		case strategy.Buy:
 			share := int64(math.Trunc(b.Cash / price))
 			cost := float64(share) * price
 			if b.Cash < cost {
-				log.Printf("want BUY, but poor, so HOLD")
+				zap.S().Infof("want BUY, but poor, so HOLD")
 				break
 			}
 			b.Equity += share
@@ -51,7 +51,7 @@ func (b *BackTester) BackTest() error {
 			o = "BUY"
 		case strategy.Sell:
 			if b.Equity <= 0 {
-				log.Printf("want SELL, but have no stock, so HOLD")
+				zap.S().Infof("want SELL, but have no stock, so HOLD")
 				break
 			}
 			b.Cash += float64(b.Equity) * price
@@ -62,17 +62,17 @@ func (b *BackTester) BackTest() error {
 		default:
 		}
 		asset := float64(b.Equity)*price + b.Cash
-		log.Printf("%v, current asset=%f, cash=%f, equity=%d\n\n", o, asset, b.Cash, b.Equity)
+		zap.S().Infof("%v, current asset=%f, cash=%f, equity=%d", o, asset, b.Cash, b.Equity)
 		assetArr = append(assetArr, asset)
 		priceArr = append(priceArr, price)
 
 		err = series.Next()
 		if err != nil {
-			log.Printf("Next fail, current slot = %v", series.GetCurrent())
+			zap.S().Infof("Next fail, current slot = %v", series.GetCurrent())
 			return err
 		}
 	}
-	util.CreateLineChart("assetArr", assetArr)
-	util.CreateLineChart("priceArr", priceArr)
+	chart.CreateLineChart("assetArr", assetArr)
+	chart.CreateLineChart("priceArr", priceArr)
 	return nil
 }

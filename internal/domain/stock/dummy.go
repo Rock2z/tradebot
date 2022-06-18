@@ -1,10 +1,10 @@
 package stock
 
 import (
-	"log"
 	"math/rand"
 
 	"github.com/rock2z/tradebot/internal/domain/timeslot"
+	"go.uber.org/zap"
 )
 
 type DummyStock struct {
@@ -26,7 +26,7 @@ func (d DummyStock) GetOpen(time timeslot.ISlot) float64 {
 		diff -= 2 * diff
 	}
 	val := d.Val + float64(diff)
-	log.Printf("current price=%f, diff=%d", val, diff)
+	zap.S().Infof("current price=%f, diff=%d", val, diff)
 	return val
 }
 

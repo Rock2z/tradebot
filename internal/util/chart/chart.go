@@ -1,4 +1,4 @@
-package util
+package chart
 
 import (
 	"os"
