@@ -1,4 +1,4 @@
-package internal
+package util
 
 import (
 	"os"
@@ -6,7 +6,6 @@ import (
 
 	"github.com/go-echarts/go-echarts/v2/charts"
 	"github.com/go-echarts/go-echarts/v2/opts"
-	"github.com/go-echarts/go-echarts/v2/types"
 )
 
 func CreateLineChart(name string, data []float64) {
@@ -14,12 +13,9 @@ func CreateLineChart(name string, data []float64) {
 	line := charts.NewLine()
 	// set some global options like Title/Legend/ToolTip or anything else
 	line.SetGlobalOptions(
-		charts.WithInitializationOpts(opts.Initialization{
-			Theme: types.ThemeInfographic,
-		}),
 		charts.WithTitleOpts(opts.Title{
-			Title:    "Line chart in Go",
-			Subtitle: "This is fun to use!",
+			Title:    name,
+			Subtitle: "One Year Performance",
 		}),
 	)
 	// Put data into instance
@@ -31,7 +27,7 @@ func CreateLineChart(name string, data []float64) {
 		AddSeries(name, items).
 		SetSeriesOptions(charts.WithLineChartOpts(opts.LineChart{Smooth: true}))
 
-	f, _ := os.Create(name + ".html")
+	f, _ := os.Create("log/" + name + ".html")
 	_ = line.Render(f)
 }
 
