@@ -1,6 +1,7 @@
 package util
 
 import (
+	"math"
 	"reflect"
 	"time"
 )
@@ -31,4 +32,8 @@ func GetTypeNameByReflect(a any) string {
 		return ""
 	}
 	return reflect.TypeOf(a).String()
+}
+
+func CalcMaxShare(budget, price float64) int64 {
+	return int64(math.Trunc(budget / price))
 }

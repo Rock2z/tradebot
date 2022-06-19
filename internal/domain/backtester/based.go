@@ -1,9 +1,10 @@
 package backtester
 
 import (
-	"math"
 	"time"
 
+	"github.com/rock2z/tradebot/internal/domain/operation"
+	"github.com/rock2z/tradebot/internal/domain/property"
 	"github.com/rock2z/tradebot/internal/domain/report"
 	"github.com/rock2z/tradebot/internal/domain/report/analysis"
 	"github.com/rock2z/tradebot/internal/domain/stock"
@@ -26,52 +27,36 @@ type BackTester struct {
 func (b *BackTester) BackTest() error {
 	series := b.TimeSeries
 	for _, now := range series.GetSlots() {
-		unit, err := b.Stock.GetUnit(now)
-		if err != nil {
-			zap.S().Infof("b.Stock.GetOpen fail, current slot = %v", now)
-			return err
-		}
-		price := unit.GetClose()
+		unit := b.Stock.GetUnit(now)
+		price := b.Strategy.GetPrice(unit)
 
 		op := b.Strategy.Decide(now, b.Stock)
-		switch op {
-		case strategy.Buy:
-			share := int64(math.Trunc(b.Cash / price))
-			cost := float64(share) * price
-			if b.Cash < cost {
-				zap.S().Infof("want BUY, but poor, so HOLD")
-				break
-			}
-			b.Equity += share
-			b.Cash -= cost
-		case strategy.Sell:
-			if b.Equity <= 0 {
-				zap.S().Infof("want SELL, but have no stock, so HOLD")
-				break
-			}
-			b.Cash += float64(b.Equity) * price
-			b.Equity = 0
-		case strategy.Hold:
-			fallthrough
-		default:
+		if err := Operate(op, b.Strategy.GetProperty(), b.Strategy.GetPrice(unit)); err != nil {
+			return err
 		}
-		asset := float64(b.Equity)*price + b.Cash
+
+		asset := b.Strategy.GetProperty().GetAsset(price)
 		zap.S().Infof("time=%s, %s, price=%v, asset=%f, cash=%f, equity=%d",
 			time.UnixMilli(now.GetTimeStamp()).Format(util.DefaultLogLayout), op, price, asset, b.Cash, b.Equity)
-		b.Report.Add(report.NewBasedReportUnit(now, op, price, asset, b.Cash, b.Equity))
+		b.Report.Add(report.NewBasedReportUnit(now, op.GetOperationType(), price, asset, b.Cash, b.Equity))
 	}
+
+	return GenerateChart(b.Report)
+}
+
+func GenerateChart(r report.IReport) error {
 	err := util.Loop(
 		func() error {
-			return analysis.GenerateChart(b.Report, analysis.CategoryPrice)
+			return analysis.GenerateChart(r, analysis.CategoryPrice)
 		},
 		func() error {
-			return analysis.GenerateChart(b.Report, analysis.CategoryAsset)
+			return analysis.GenerateChart(r, analysis.CategoryAsset)
 		},
 		func() error {
-			return analysis.GenerateChart(b.Report, analysis.CategoryCash)
+			return analysis.GenerateChart(r, analysis.CategoryCash)
 		},
 		func() error {
-			return analysis.GenerateChart(b.Report, analysis.CategoryEquity)
+			return analysis.GenerateChart(r, analysis.CategoryEquity)
 		},
 	)
 	if err != nil {
@@ -79,4 +64,18 @@ func (b *BackTester) BackTest() error {
 		return err
 	}
 	return nil
+}
+
+//TODO put price in operation
+func Operate(op operation.IOperation, p property.IProperty, price float64) error {
+	switch op.GetOperationType() {
+	case operation.BUY:
+		return p.Buy(price, op.GetAmount())
+	case operation.SELL:
+		return p.Sell(price, op.GetAmount())
+	case operation.HOLD:
+		fallthrough
+	default:
+		return nil
+	}
 }

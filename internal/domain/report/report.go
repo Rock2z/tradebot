@@ -1,7 +1,7 @@
 package report
 
 import (
-	"github.com/rock2z/tradebot/internal/domain/strategy"
+	"github.com/rock2z/tradebot/internal/domain/operation"
 	"github.com/rock2z/tradebot/internal/domain/timeslot"
 )
 
@@ -16,7 +16,7 @@ type IReport interface {
 
 type IReportUnit interface {
 	GetSlot() timeslot.ISlot
-	GetOperation() strategy.Operation
+	GetOperation() operation.Type
 	GetPrice() float64
 	GetAsset() float64
 	GetCash() float64

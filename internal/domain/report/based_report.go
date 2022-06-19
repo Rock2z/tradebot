@@ -1,7 +1,7 @@
 package report
 
 import (
-	"github.com/rock2z/tradebot/internal/domain/strategy"
+	"github.com/rock2z/tradebot/internal/domain/operation"
 	"github.com/rock2z/tradebot/internal/domain/tberr"
 	"github.com/rock2z/tradebot/internal/domain/timeslot"
 )
@@ -36,7 +36,7 @@ func (b BasedReport) GetReportUnits() []IReportUnit {
 
 type BasedReportUnit struct {
 	slot      timeslot.ISlot
-	operation strategy.Operation
+	operation operation.Type
 
 	price  float64
 	asset  float64
@@ -45,7 +45,7 @@ type BasedReportUnit struct {
 }
 
 func NewBasedReportUnit(
-	slot timeslot.ISlot, operation strategy.Operation, price float64, asset float64, cash float64, equity int64,
+	slot timeslot.ISlot, operation operation.Type, price float64, asset float64, cash float64, equity int64,
 ) *BasedReportUnit {
 	return &BasedReportUnit{
 		slot:      slot,
@@ -57,7 +57,7 @@ func NewBasedReportUnit(
 	}
 }
 
-func (b BasedReportUnit) GetOperation() strategy.Operation {
+func (b BasedReportUnit) GetOperation() operation.Type {
 	return b.operation
 }
 

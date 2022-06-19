@@ -5,7 +5,7 @@ import "github.com/rock2z/tradebot/internal/domain/timeslot"
 type IStock interface {
 	GetTimeSeries() timeslot.ISeries
 	GetUnits() []IStockUnit
-	GetUnit(slot timeslot.ISlot) (IStockUnit, error)
+	GetUnit(slot timeslot.ISlot) IStockUnit
 }
 
 type IStockUnit interface {

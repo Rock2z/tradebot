@@ -4,45 +4,53 @@ import (
 	"math"
 	"sync"
 
+	"github.com/rock2z/tradebot/internal/domain/operation"
+	"github.com/rock2z/tradebot/internal/domain/property"
 	"github.com/rock2z/tradebot/internal/domain/stock"
-	"github.com/rock2z/tradebot/internal/domain/strategy"
 	"github.com/rock2z/tradebot/internal/domain/timeslot"
-	"go.uber.org/zap"
+	"github.com/rock2z/tradebot/internal/util"
 )
 
 type Strategy struct {
 	once sync.Once
 
-	base float64
-	//even grid
-	interval float64
+	property property.IProperty
 
+	//even grid
+	base              float64
+	interval          float64
 	currentGridNumber int64
 }
 
-func (s *Strategy) Decide(slot timeslot.ISlot, stock stock.IStock) strategy.Operation {
-	unit, err := stock.GetUnit(slot)
-	if err != nil {
-		zap.S().Warnf("stock.GetUnit(slot) fail|slot=%v|err=%v", slot, err)
-		return strategy.Hold
+func NewGridStrategy(capital float64) *Strategy {
+	return &Strategy{
+		property: property.NewProperty(capital, 0),
 	}
+}
+
+func (s *Strategy) Decide(slot timeslot.ISlot, stock stock.IStock) operation.IOperation {
+	unit := stock.GetUnit(slot)
 	s.once.Do(func() {
 		s.Init(unit)
 	})
 
 	defer func() { s.currentGridNumber = s.GetGridNumber(unit) }()
 	if s.GetGridNumber(unit) < s.currentGridNumber {
-		return strategy.Buy
+		return operation.NewBuyOperation(util.CalcMaxShare(s.GetProperty().GetCash(), s.GetPrice(unit)))
 	}
 	if s.GetGridNumber(unit) > s.currentGridNumber {
-		return strategy.Sell
+		return operation.NewSellOperation(s.GetProperty().GetEquity())
 	}
-	return strategy.Hold
+	return operation.NewHoldOperation()
+}
+
+func (s *Strategy) GetProperty() property.IProperty {
+	return s.property
 }
 
 func (s *Strategy) Init(unit stock.IStockUnit) {
 	s.base = s.GetPrice(unit)
-	s.interval = math.Abs(unit.GetHigh()-unit.GetLow()) / 2.0
+	s.interval = math.Abs(unit.GetHigh()-unit.GetLow()) / float64(2)
 	s.currentGridNumber = s.GetGridNumber(unit)
 }
 

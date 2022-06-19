@@ -1,16 +1,10 @@
 package strategy
 
 import (
+	"github.com/rock2z/tradebot/internal/domain/operation"
+	"github.com/rock2z/tradebot/internal/domain/property"
 	"github.com/rock2z/tradebot/internal/domain/stock"
 	"github.com/rock2z/tradebot/internal/domain/timeslot"
-)
-
-type Operation string
-
-const (
-	Buy  Operation = "BUY"
-	Sell Operation = "SELL"
-	Hold Operation = "HOLD"
 )
 
 /*
@@ -21,5 +15,7 @@ Operation function's result means, what operation we want to apply to this part 
 When a strategy run, Operation function will be called every timeslot from the startTime to endTime.
 */
 type IStrategy interface {
-	Decide(time timeslot.ISlot, stock stock.IStock) Operation
+	Decide(time timeslot.ISlot, stock stock.IStock) operation.IOperation
+	GetProperty() property.IProperty
+	GetPrice(unit stock.IStockUnit) float64
 }

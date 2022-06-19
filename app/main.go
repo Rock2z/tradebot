@@ -2,7 +2,6 @@ package main
 
 import (
 	"math/rand"
-	"os"
 	"time"
 
 	"github.com/piquette/finance-go/datetime"
@@ -12,31 +11,12 @@ import (
 	"github.com/rock2z/tradebot/internal/domain/strategy/grid"
 	"github.com/rock2z/tradebot/internal/util"
 	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
 )
 
 func main() {
 	rand.Seed(time.Now().Unix())
 	InitLogger()
-
 	Run()
-}
-
-func InitLogger() {
-	level := zap.DebugLevel
-	pe := zap.NewProductionEncoderConfig()
-	pe.EncodeTime = zapcore.TimeEncoderOfLayout(util.DefaultLogLayout)
-	fileEncoder := zapcore.NewJSONEncoder(pe)
-	consoleEncoder := zapcore.NewConsoleEncoder(pe)
-	f, _ := os.Create("log/data.log")
-
-	core := zapcore.NewTee(
-		zapcore.NewCore(fileEncoder, zapcore.AddSync(f), level),
-		zapcore.NewCore(consoleEncoder, zapcore.AddSync(os.Stdout), level),
-	)
-
-	logger := zap.New(core, zap.AddCaller())
-	zap.ReplaceGlobals(logger)
 }
 
 func Run() {
@@ -58,13 +38,13 @@ func Run() {
 	timeSeries := yahooStock.GetTimeSeries()
 
 	// init strategy
-	strategy := &grid.Strategy{}
+	st := grid.NewGridStrategy(capital)
 
 	//init report
 	rep := report.NewBasedReport(make([]report.IReportUnit, 0, len(timeSeries.GetSlots())))
 
 	b := &backtester.BackTester{
-		Strategy:   strategy,
+		Strategy:   st,
 		Report:     rep,
 		TimeSeries: timeSeries,
 		Stock:      yahooStock,
