@@ -5,11 +5,7 @@ import "github.com/rock2z/tradebot/internal/domain/timeslot"
 type IStock interface {
 	GetTimeSeries() timeslot.ISeries
 	GetUnits() []IStockUnit
-	GetHigh(time timeslot.ISlot) (float64, error)
-	GetLow(time timeslot.ISlot) (float64, error)
-	GetOpen(time timeslot.ISlot) (float64, error)
-	GetClose(time timeslot.ISlot) (float64, error)
-	GetVolume(time timeslot.ISlot) (float64, error)
+	GetUnit(slot timeslot.ISlot) (IStockUnit, error)
 }
 
 type IStockUnit interface {

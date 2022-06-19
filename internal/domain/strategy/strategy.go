@@ -1,6 +1,7 @@
 package strategy
 
 import (
+	"github.com/rock2z/tradebot/internal/domain/stock"
 	"github.com/rock2z/tradebot/internal/domain/timeslot"
 )
 
@@ -20,5 +21,5 @@ Operation function's result means, what operation we want to apply to this part 
 When a strategy run, Operation function will be called every timeslot from the startTime to endTime.
 */
 type IStrategy interface {
-	Decide(time timeslot.ISlot) Operation
+	Decide(time timeslot.ISlot, stock stock.IStock) Operation
 }

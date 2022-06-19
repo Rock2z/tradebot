@@ -67,6 +67,15 @@ func (y *YahooStock) GetUnits() []IStockUnit {
 	return y.units
 }
 
+func (y *YahooStock) GetUnit(slot timeslot.ISlot) (IStockUnit, error) {
+	for _, unit := range y.units {
+		if unit.GetSlot().Equal(slot) {
+			return unit, nil
+		}
+	}
+	return nil, tberr.ErrNotFound
+}
+
 func (y *YahooStock) GetHigh(slot timeslot.ISlot) (float64, error) {
 	for _, unit := range y.units {
 		if unit.GetSlot().Equal(slot) {

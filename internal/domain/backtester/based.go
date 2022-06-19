@@ -26,13 +26,14 @@ type BackTester struct {
 func (b *BackTester) BackTest() error {
 	series := b.TimeSeries
 	for _, now := range series.GetSlots() {
-		price, err := b.Stock.GetClose(now)
+		unit, err := b.Stock.GetUnit(now)
 		if err != nil {
 			zap.S().Infof("b.Stock.GetOpen fail, current slot = %v", now)
 			return err
 		}
+		price := unit.GetClose()
 
-		op := b.Strategy.Decide(now)
+		op := b.Strategy.Decide(now, b.Stock)
 		switch op {
 		case strategy.Buy:
 			share := int64(math.Trunc(b.Cash / price))

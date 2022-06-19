@@ -9,7 +9,7 @@ import (
 	"github.com/rock2z/tradebot/internal/domain/backtester"
 	"github.com/rock2z/tradebot/internal/domain/report"
 	"github.com/rock2z/tradebot/internal/domain/stock"
-	"github.com/rock2z/tradebot/internal/domain/strategy/buy_and_hold"
+	"github.com/rock2z/tradebot/internal/domain/strategy/grid"
 	"github.com/rock2z/tradebot/internal/util"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -42,7 +42,7 @@ func InitLogger() {
 func Run() {
 	// param definition
 	symbol := "AAPL"
-	startTime, _ := time.ParseInLocation(util.DefaultShortLayout, "2022-Jun-14", util.USLocation)
+	startTime, _ := time.ParseInLocation(util.DefaultShortLayout, "2021-Jan-01", util.USLocation)
 	endTime := time.Now().In(util.USLocation)
 	interval := datetime.OneDay
 	capital := float64(1_000_000)
@@ -58,7 +58,7 @@ func Run() {
 	timeSeries := yahooStock.GetTimeSeries()
 
 	// init strategy
-	strategy := buy_and_hold.NewBuyAndHoldStrategy(timeSeries, yahooStock)
+	strategy := &grid.Strategy{}
 
 	//init report
 	rep := report.NewBasedReport(make([]report.IReportUnit, 0, len(timeSeries.GetSlots())))
