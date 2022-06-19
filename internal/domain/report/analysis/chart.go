@@ -25,7 +25,7 @@ func GenerateChart(report report.IReport, category Category) error {
 	XAxis := make([]string, 0, len(units))
 	YAxis := make([]opts.LineData, 0, len(units))
 	for _, unit := range units {
-		slot := time.UnixMilli(unit.GetSlot().GetTimeStamp()).Format(util.DefaultLayout)
+		slot := time.UnixMilli(unit.GetSlot().GetTimeStamp()).Format(util.DefaultLogLayout)
 		XAxis = append(XAxis, slot)
 
 		var yData float64

@@ -21,6 +21,10 @@ func (b *BasedSeries) GetCurrent() ISlot {
 	return b.slots[b.cur]
 }
 
+func (b *BasedSeries) GetSlots() []ISlot {
+	return b.slots
+}
+
 func (b *BasedSeries) GetSlot(index int) (ISlot, error) {
 	if index < 0 || index >= len(b.slots) {
 		return nil, tberr.ErrNotFound

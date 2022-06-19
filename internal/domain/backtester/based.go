@@ -25,15 +25,10 @@ type BackTester struct {
 
 func (b *BackTester) BackTest() error {
 	series := b.TimeSeries
-	for {
-		now := series.GetCurrent()
-		if !series.HasMore() {
-			break
-		}
-
+	for _, now := range series.GetSlots() {
 		price, err := b.Stock.GetClose(now)
 		if err != nil {
-			zap.S().Infof("b.Stock.GetOpen fail, current slot = %v", series.GetCurrent())
+			zap.S().Infof("b.Stock.GetOpen fail, current slot = %v", now)
 			return err
 		}
 
@@ -61,14 +56,8 @@ func (b *BackTester) BackTest() error {
 		}
 		asset := float64(b.Equity)*price + b.Cash
 		zap.S().Infof("time=%s, %s, price=%v, asset=%f, cash=%f, equity=%d",
-			time.UnixMilli(now.GetTimeStamp()).Format(util.DefaultLayout), op, price, asset, b.Cash, b.Equity)
+			time.UnixMilli(now.GetTimeStamp()).Format(util.DefaultLogLayout), op, price, asset, b.Cash, b.Equity)
 		b.Report.Add(report.NewBasedReportUnit(now, op, price, asset, b.Cash, b.Equity))
-
-		err = series.Next()
-		if err != nil {
-			zap.S().Infof("Next fail, current slot = %v", series.GetCurrent())
-			return err
-		}
 	}
 	err := util.Loop(
 		func() error {

@@ -1,10 +1,14 @@
 package util
 
-import "time"
+import (
+	"reflect"
+	"time"
+)
 
 var (
-	DefaultLayout = time.RFC3339
-	USLocation, _ = time.LoadLocation("America/New_York")
+	DefaultLogLayout   = time.RFC3339
+	DefaultShortLayout = "2006-Jan-02"
+	USLocation, _      = time.LoadLocation("America/New_York")
 )
 
 func Loop(fns ...func() error) error {
@@ -20,4 +24,11 @@ func InRegularMarketingTime(tm time.Time) bool {
 	start := time.Date(tm.Year(), tm.Month(), tm.Day(), 9, 29, 59, 59, USLocation)
 	end := time.Date(tm.Year(), tm.Month(), tm.Day(), 16, 0, 0, 1, USLocation)
 	return tm.After(start) && tm.Before(end)
+}
+
+func GetTypeNameByReflect(a any) string {
+	if a == nil {
+		return ""
+	}
+	return reflect.TypeOf(a).String()
 }

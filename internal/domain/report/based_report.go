@@ -11,6 +11,9 @@ type BasedReport struct {
 }
 
 func NewBasedReport(units []IReportUnit) *BasedReport {
+	if units == nil {
+		units = make([]IReportUnit, 0, 100)
+	}
 	return &BasedReport{units: units}
 }
 

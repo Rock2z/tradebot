@@ -14,31 +14,30 @@ import (
 type YahooStock struct {
 	symbol   string
 	from, to time.Time
+	interval datetime.Interval
 	units    []IStockUnit
 }
 
-func NewYahooStock(symbol string, from, to time.Time) *YahooStock {
+func NewYahooStock(symbol string, from, to time.Time, interval datetime.Interval) *YahooStock {
 	return &YahooStock{
-		symbol: symbol,
-		from:   from,
-		to:     to,
-		units:  make([]IStockUnit, 0),
+		symbol:   symbol,
+		from:     from,
+		to:       to,
+		interval: interval,
+		units:    make([]IStockUnit, 0),
 	}
 }
 
 func (y *YahooStock) Init() error {
 	params := &chart.Params{
 		Symbol:   y.symbol,
+		Interval: y.interval,
 		Start:    datetime.New(&y.from),
 		End:      datetime.New(&y.to),
-		Interval: datetime.OneMin,
 	}
 	iter := chart.Get(params)
 	for iter.Next() {
 		bar := iter.Current().(*finance.ChartBar)
-		//if !util.InRegularMarketingTime(time.Unix(int64(bar.Timestamp), 0)) {
-		//	continue
-		//}
 		unit := NewBasedStockUnit(
 			timeslot.NewBasedSlot(time.Unix(int64(bar.Timestamp), 0)),
 			bar.High.InexactFloat64(),
@@ -53,6 +52,15 @@ func (y *YahooStock) Init() error {
 		fmt.Println(err)
 	}
 	return nil
+}
+
+func (y *YahooStock) GetTimeSeries() timeslot.ISeries {
+	units := y.GetUnits()
+	series := make([]timeslot.ISlot, 0, len(units))
+	for _, unit := range units {
+		series = append(series, unit.GetSlot())
+	}
+	return timeslot.NewBasedSeries(series)
 }
 
 func (y *YahooStock) GetUnits() []IStockUnit {

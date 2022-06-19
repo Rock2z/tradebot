@@ -3,6 +3,8 @@ package stock
 import "github.com/rock2z/tradebot/internal/domain/timeslot"
 
 type IStock interface {
+	GetTimeSeries() timeslot.ISeries
+	GetUnits() []IStockUnit
 	GetHigh(time timeslot.ISlot) (float64, error)
 	GetLow(time timeslot.ISlot) (float64, error)
 	GetOpen(time timeslot.ISlot) (float64, error)

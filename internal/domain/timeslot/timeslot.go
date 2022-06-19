@@ -6,10 +6,7 @@ type ISlot interface {
 }
 
 type ISeries interface {
-	GetCurrent() ISlot
-	GetSlot(index int) (ISlot, error)
 	GetIndex(slot ISlot) (int, error)
-	Next() error
-	HasMore() bool
-	Reset()
+	GetSlot(index int) (ISlot, error)
+	GetSlots() []ISlot
 }
